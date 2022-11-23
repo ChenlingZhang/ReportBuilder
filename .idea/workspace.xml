@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac4d6019-398f-4f8e-b9a8-da3bf96ac3fe" name="Changes" comment="项目搭建上传">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/DocUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/DataUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/log4j.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/MethodTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/entity/Analysis.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/entity/Analysis.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/entity/ReportDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/entity/ReportDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/impl/BuildReportImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/impl/BuildReportImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/DocUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/DocUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +46,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "D:/J-Project/WorkSpace/ReportBuilder",
+    "last_opened_file_path": "D:/WorkSpace/ReportBuilder",
     "settings.editor.selected.configurable": "MTConfigurable",
     "vue.rearranger.settings.migration": "true"
   }
@@ -51,9 +57,61 @@
       <recent name="D:\J-Project\WorkSpace\ReportBuilder\src\main\java\org\example\entity" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Soumns\Desktop\ReportBuilder" />
+      <recent name="C:\Users\Soumns\Desktop\ReportBuilder\src" />
       <recent name="D:\J-Project\WorkSpace\ReportBuilder\src\main\java\lib" />
       <recent name="D:\J-Project\WorkSpace\ReportBuilder\src\main" />
     </key>
+  </component>
+  <component name="RunManager" selected="JUnit.MethodTest.test">
+    <configuration name="MethodTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="test.MethodTest" />
+      <module name="ReportBuilder" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MethodTest.test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="ReportBuilder" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="MethodTest" />
+      <option name="METHOD_NAME" value="test" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MethodTest.test" type="TestNG" temporary="true" nameIsGenerated="true">
+      <module name="ReportBuilder" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="test" />
+      <option name="MAIN_CLASS_NAME" value="test.MethodTest" />
+      <option name="METHOD_NAME" value="test" />
+      <option name="TEST_OBJECT" value="METHOD" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.MethodTest.test" />
+        <item itemvalue="Application.MethodTest" />
+        <item itemvalue="TestNG.MethodTest.test" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -67,6 +125,7 @@
       <workItem from="1669131132530" duration="134000" />
       <workItem from="1669131349043" duration="839000" />
       <workItem from="1669132201220" duration="350000" />
+      <workItem from="1669163380567" duration="9025000" />
     </task>
     <task id="LOCAL-00001" summary="项目搭建上传">
       <created>1669129875587</created>

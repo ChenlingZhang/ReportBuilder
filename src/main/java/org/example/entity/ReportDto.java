@@ -1,7 +1,6 @@
 package org.example.entity;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -57,18 +56,20 @@ public class ReportDto {
      * 报警上限
      * 对应报告：要求
      */
-    private String highSet;
+    private Double highSet;
 
     /**
      * 报警下限
      * 对应报告：要求
      */
-    private String lowSet;
+    private Double lowSet;
 
     /**
      * 分析结果
      */
     private List<Analysis> analysis;
 
+
 }
+
 

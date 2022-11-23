@@ -2,26 +2,29 @@ package org.example.entity;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class Analysis {
 
     /**
      * 日期
      */
-    private Long date;
+    private LocalDateTime date;
 
     /**
      * 最大值
      */
-    private String max;
+    private Double max;
 
     /**
      * 最小值
      */
-    private String min;
+    private Double min;
 
     /**
      * 平均值
      */
-    private String avg;
+    private Double avg;
+
 }
