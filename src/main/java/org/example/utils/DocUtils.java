@@ -107,25 +107,23 @@ public class DocUtils {
         return dateTime.getDayOfMonth();
     }
 
-    public static void createChannelTable(List<ReportDto> reportDtos, DocumentBuilder builder, Document document){
-        int count = 0;
+    public static Table createChannelTable(List<ReportDto> reportDtos, DocumentBuilder builder, Document document){
         Table table = builder.startTable();
         Row row = new Row(document);
         row.getCells().add(createCell("对象名称",document));
         row.getCells().add(createCell("通道号",document));
         row.getCells().add(createCell("单位",document));
         row.getCells().add(createCell("要求",document));
-        table.getRows().insert(count,row);
-        count++;
-        count++;
-        for (ReportDto reportDto : reportDtos)  {
-            table.getRows().insert(count,addRowsBehind(reportDto,document));
-        }
-
-
-        builder.endTable();
+        table.getRows().add(row);
+        return table;
     }
 
+    public static Table createDataTable(Document document, DocumentBuilder builder, int index){
+        Table table = null;
+
+
+        return table;
+    }
     public static void createDataTable(List<ReportDto> reportDtos, DocumentBuilder builder){
         int count = 0;
         for (int i = 0; i < reportDtos.size() ; i++) {
@@ -277,15 +275,14 @@ public class DocUtils {
      * @param document
      * @return
      */
-    private static Row addRowsBehind(ReportDto reportDto, Document document) {
+    public static void addRowsBehind(Table table,ReportDto reportDto, Document document) {
 
         Row data = new Row(document);
         data.getCells().add(createCell(reportDto.getName(),document));
         data.getCells().add(createCell(reportDto.getChannel(),document));
         data.getCells().add(createCell(reportDto.getSpecification(),document));
         data.getCells().add(createCell(reportDto.getLowSet()+"~"+reportDto.getHighSet(),document));
-
-        return data;
+        table.getRows().add(data);
     }
 
     /**
@@ -308,12 +305,11 @@ public class DocUtils {
      * @param report dto
      * @param count datatablecount
      */
-    private static void tableDesc(DocumentBuilder builder, ReportDto report,int count){
+    public static void tableDesc(DocumentBuilder builder, ReportDto report,int count){
         String month = Integer.toString(report.getAnalysis().get(0).getDate().getMonthValue());
         String stand = report.getStand();
         String systemName = report.getSystem();
         String type = report.getType();
-        String device = report.getDevice();
         String channelName = report.getChannel();
         Double max = DataUtils.getMax(report.getAnalysis());
         Double min = DataUtils.getMin(report.getAnalysis());

@@ -1,8 +1,6 @@
 package org.example.service.impl;
 
-import com.aspose.words.Document;
-import com.aspose.words.DocumentBuilder;
-import com.aspose.words.ParagraphCollection;
+import com.aspose.words.*;
 import lombok.extern.slf4j.Slf4j;
 import org.example.entity.ReportDto;
 import org.example.service.BuildReport;
@@ -31,45 +29,51 @@ public class BuildReportImpl implements BuildReport {
             file.createNewFile();
             Document document = new Document(filePath);
             DocumentBuilder builder = new DocumentBuilder(document);
-            ParagraphCollection collection = document.getFirstSection().getBody().getParagraphs();
+
+            // 将纸张设置为横向排列
+            log.info("纸张设置为横向排列");
+            SectionCollection sectionCollection = document.getSections();
+            sectionCollection.forEach(section->{section.getPageSetup().setOrientation(Orientation.LANDSCAPE);});
+
             Map<String,List<ReportDto>> dataMap = DataUtils.generateListToMapKey(reportDtos,2);
             Set<String> keySet = dataMap.keySet();
             log.info("Map生成结束，Key值{}", keySet);
             int mainTitleCount =1;
+
             for (String key: keySet) {
                 DocUtils.generateTitle(builder, mainTitleCount + " " + key, 1);
                 List<ReportDto> reports = dataMap.get(key);
                 List<String> typeList = new ArrayList<>(); // 二级标题存储表
-                List<String> nameList = new ArrayList<>(); // 三级标题存储表
                 int typeCount = 0;
-                int nameCount = 0;
-                int fixTitlteCount = 0;
+                int titleCount = 0;
+                Table channelTable = null;
+                Table dataTable = null;
                 for (ReportDto report: reports) {
-
+                    int size = reports.size();
                     if (!typeList.contains(report.getType())){
                         typeCount++;
                         String title = mainTitleCount+"."+typeCount+" " +report.getType();
 
                         DocUtils.generateTitle(builder,title,2);
                         typeList.add(report.getType());
-
                     }
-                    if (!nameList.contains(report.getName())){
-                        nameCount++;
-                        String title = mainTitleCount+"."+typeCount+"."+nameCount + " "+ report.getName();
-                        DocUtils.generateTitle(builder,title,3);
-                        nameList.add(report.getName());
-
-                    }
-                    fixTitlteCount++;
-                    String fixTitle = mainTitleCount+"."+typeCount+"."+nameCount+"."+fixTitlteCount+"统计通道"+" ";
-                    DocUtils.generateTitle(builder,fixTitle,4);
+                    titleCount++;
+                    String fixTitle = mainTitleCount+"."+typeCount+ "."+titleCount+"统计通道"+" ";
+                    DocUtils.generateTitle(builder,fixTitle,3);
                     log.info("key：{} title生成结束",key);
+                    if (channelTable == null){
+                        log.info("channelTable 为null, key{}: 开始生成通道信息表",key);
+                        DocUtils.textCenterShow(builder);
+                        builder.writeln("通道表"+channelTableCount+":"+report.getStand()+report.getSystem()+report.getType());
+                        channelTable = DocUtils.createChannelTable(reports,builder,document);
+                    }
+                    DocUtils.addRowsBehind(channelTable,report,document);
 
-                    log.info("key{}: 开始生成通道信息表",key);
-                    DocUtils.textCenterShow(builder);
-                    builder.writeln("通道表"+channelTableCount+":"+report.getStand()+report.getSystem()+report.getType());
-                    DocUtils.createChannelTable(reports,builder,document);
+                    if (dataTable == null){
+                        log.info("dataTable 为null, key{}：开始生成数据信息表", key);
+
+                    }
+
                     log.info("key{}: 开始生数据表",key);
                     DocUtils.createDataTable(reports,builder);
                 }

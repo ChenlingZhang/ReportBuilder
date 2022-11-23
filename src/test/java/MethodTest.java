@@ -1,3 +1,4 @@
+import lombok.extern.slf4j.Slf4j;
 import org.example.entity.Analysis;
 import org.example.entity.ReportDto;
 import org.example.service.impl.BuildReportImpl;
@@ -7,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class MethodTest {
     private static List<ReportDto> createData(){
         List<ReportDto> reportDtos = new ArrayList<>();
@@ -102,5 +104,10 @@ public class MethodTest {
     public void test(){
         BuildReportImpl builder = new BuildReportImpl();
         builder.build(createData(), "./doc/test.docx");
+    }
+
+    @Test
+    public void commonTest(){
+        log.info(""+(12%4));
     }
 }
