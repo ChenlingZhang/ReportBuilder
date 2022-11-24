@@ -37,7 +37,7 @@ public class DataUtils {
         return hashMap;
     }
 
-    public static double[] coverArray(ArrayList<Double> list ){
+    public static double[] coverArray(List<Double> list ){
         double[] dl = new double[list.size()];
         for (int i = 0; i < list.size(); i++) {
             dl[i] = list.get(i);
@@ -55,7 +55,7 @@ public class DataUtils {
     }
 
     public static Double getMin(List<Analysis> analysis) {
-        double temp = 0;
+        double temp = analysis.get(0).getMin();
         for (Analysis a: analysis) {
             if (a.getMin() < temp){
                 temp = a.getMin();
@@ -71,4 +71,5 @@ public class DataUtils {
         }
         return  total/analysis.size();
     }
+
 }

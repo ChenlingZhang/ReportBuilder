@@ -72,6 +72,8 @@ public class DocUtils {
         return builder;
     }
 
+
+
     /**
      * 居中显示文字
      * @param builder documentbuilder
@@ -107,7 +109,7 @@ public class DocUtils {
         return dateTime.getDayOfMonth();
     }
 
-    public static Table createChannelTable(List<ReportDto> reportDtos, DocumentBuilder builder, Document document){
+    public static Table createChannelTable(DocumentBuilder builder, Document document){
         Table table = builder.startTable();
         Row row = new Row(document);
         row.getCells().add(createCell("对象名称",document));
@@ -115,159 +117,170 @@ public class DocUtils {
         row.getCells().add(createCell("单位",document));
         row.getCells().add(createCell("要求",document));
         table.getRows().add(row);
+        builder.endTable();
         return table;
     }
 
-    public static Table createDataTable(Document document, DocumentBuilder builder, int index){
-        Table table = null;
-
-
+    public static Table initDataTable(DocumentBuilder builder,Document document, ReportDto report){
+        Table table = builder.startTable();
+        List<Analysis> analysises = report.getAnalysis();
+        RowCollection rows= table.getRows();
+        Row paraRow = new Row(document);
+        paraRow.getCells().add(createCell("参数",document));
+        Row requirementsRow = new Row(document);
+        requirementsRow.getCells().add(createCell("要求",document));
+        Row dateRow = new Row(document);
+        dateRow.getCells().add(createCell("日期",document));
+        table.appendChild(paraRow);
+        table.appendChild(requirementsRow);
+        table.appendChild(dateRow);
+        analysises.forEach(analysis -> {
+            Row row = new Row(document);
+            row.getCells().add(createCell(getDate(analysis.getDate())+"",document));
+            table.appendChild(row);
+        });
         return table;
     }
-    public static void createDataTable(List<ReportDto> reportDtos, DocumentBuilder builder){
-        int count = 0;
-        for (int i = 0; i < reportDtos.size() ; i++) {
-            count++;
-            tableDesc(builder,reportDtos.get(i),count);
-            builder.startTable();
-            builder.insertCell();
-            builder.getCellFormat().setWidth(20);
-            cellCenterShow(builder);
-            builder.write("参数");
-            combineCells(builder,3,reportDtos.get(i).getChannel());
-            builder.endRow();
-            builder.insertCell();
-            builder.getCellFormat().setWidth(20);
-            builder.write("要求");
-            combineCells(builder,3,reportDtos.get(i).getLowSet()+"~"+reportDtos.get(i).getHighSet());
-            builder.endRow();
-            String[] context = {"日期","max","min","avg"};
-            createDataTableSeconLine(context,builder);
-            builder.endRow();
-            for (Analysis analysis: reportDtos.get(i).getAnalysis()) {
-                insertData(reportDtos.get(i),analysis,builder);
-                builder.endRow();
-            }
-            builder.endTable();
-            log.info("开始生成数据图");
-            createChannelGraphic(reportDtos.get(i),builder,count);
-        }
-    }
-    private static void createChannelGraphic(ReportDto reportDto, DocumentBuilder builder, int index){
-        ArrayList<String> time = new ArrayList<>();
-        ArrayList<Double> maxArray = new ArrayList<>();
-        ArrayList<Double> minArray = new ArrayList<>();
-        ArrayList<Double> avgArray = new ArrayList<>();
+    public static int insertIntoDataTable(Document document, DocumentBuilder builder, ReportDto report, Table table,int ec)  {
+        RowCollection rows = table.getRows();
+        int startPoint = rows.get(0).getCount(); //获取插入前第一行中元素的数量
+        int secondPoint = startPoint +1;
+        int thirdPoint = secondPoint + 1;
+        int executeCount =ec;
 
+        // 第一行插入固定数据 channelName 并合并3个单元格
+        Row row1 = rows.get(0);
+        Cell channelCell = createCell(report.getChannel(),document);
+        channelCell.getCellFormat().setHorizontalMerge(CellMerge.FIRST);
+        cellCenterShow(builder);
+        row1.getCells().insert(startPoint, channelCell);
+        combineCells(row1,document,secondPoint,thirdPoint);
+
+        // 第二行插入固定要求数据
+        Row row2 = rows.get(1);
+        Cell requireCell = createCell(report.getLowSet()+"~"+report.getHighSet(),document);
+        requireCell.getCellFormat().setHorizontalMerge(CellMerge.FIRST);
+        row2.getCells().insert(startPoint,requireCell);
+        combineCells(row2,document,secondPoint,thirdPoint);
+
+        // 第三行内容插入
+        Row row3 = rows.get(2);
+        Cell maxCell = createCell("max",document);
+        row3.getCells().insert(startPoint,maxCell);
+        Cell minCell = createCell("min",document);
+        row3.getCells().insert(secondPoint,minCell);
+        Cell avgCell = createCell("avg",document);
+        row3.getCells().insert(thirdPoint,avgCell);
+
+        // 数据插入
+          for(int j = 3; j < rows.getCount(); j++) {
+              Analysis a = report.getAnalysis().get(j-3);
+              Row dataRow = table.getRows().get(j);
+              log.info(j+"");
+              double max = DataUtils.getMax(report.getAnalysis());
+              double min = DataUtils.getMin(report.getAnalysis());;
+              double avg = DataUtils.getAvg(report.getAnalysis());;
+              Cell maxDataCell;
+              Cell minDataCell;
+              Cell avgDataCell;
+              if (max>report.getHighSet()){
+                  maxDataCell = createRedCellElement(max + "", Color.RED, document);
+              }
+              else {
+                  maxDataCell = createCell(max + "", document);
+              }
+              if (min<report.getLowSet()){
+                  minDataCell = createRedCellElement(min+"",Color.RED,document);
+              }
+              else {
+                  minDataCell = createCell(min+"",document);
+              }
+              if(avg<report.getLowSet() || avg >report.getHighSet()){
+                  avgDataCell = createRedCellElement(avg+"",Color.RED,document);
+              }
+              else {
+                  avgDataCell = createCell(String.format("%.3f",avg),document);
+              }
+              dataRow.getCells().add(maxDataCell);
+              dataRow.getCells().add(minDataCell);
+              dataRow.getCells().add(avgDataCell);
+          }
+
+          return executeCount +1;
+  }
+
+    public static Shape initGraphic(ReportDto reportDto, DocumentBuilder builder, int count) throws Exception {
         builder.getParagraphFormat().setFirstLineIndent(0);
         builder.writeln("");
-        try {
-            Shape shape = builder.insertChart(ChartType.LINE, 432, 252);
-            shape.setVerticalAlignment(VerticalAlignment.CENTER);
-            shape.setHorizontalAlignment(HorizontalAlignment.CENTER);
-            shape.setAllowOverlap(false);
-            Chart chart = shape.getChart();
-            ChartTitle title = chart.getTitle();
-            String graphicTitle = "图" + index +":" + reportDto.getStand()+reportDto.getSystem()+reportDto.getType()+reportDto.getChannel()+" 数据统计图";
-            title.setText(graphicTitle);
-            // 获取案例中所有的Series并清空
-            ChartSeriesCollection seriesCollections = chart.getSeries();
-            seriesCollections.clear();
+        Shape shape = builder.insertChart(ChartType.LINE, 432, 252);
+        shape.setVerticalAlignment(VerticalAlignment.CENTER);
+        shape.setHorizontalAlignment(HorizontalAlignment.CENTER);
+        shape.setAllowOverlap(false);
+        Chart chart = shape.getChart();
+        ChartTitle chartTitle = chart.getTitle();
+        String titleTest = "图" + count + "\t" + generateGraphicTitle(reportDto);
+        chartTitle.setText(titleTest);
+        // 获取案例中所有的Series并清空
+        ChartSeriesCollection seriesCollections = chart.getSeries();
+        seriesCollections.clear();
+        return shape;
+    }
 
-            for (Analysis analysis : reportDto.getAnalysis()) {
-                time.add(dateFormat(analysis.getDate()));
-                maxArray.add(analysis.getMax());
-                minArray.add(analysis.getMin());
-                avgArray.add(analysis.getAvg());
-            }
-            String[] times = time.toArray(new String[0]);
-            double[] max = DataUtils.coverArray(maxArray);
-            double[] min = DataUtils.coverArray(minArray);
-            double[] avg = DataUtils.coverArray(avgArray);
-            double[] lowSet = new double[times.length];
-            double[] highSet = new double[times.length];
-            for (int i = 0; i < lowSet.length; i++) {
-                lowSet[i] = reportDto.getLowSet();
-            }
-            for (int j = 0; j < highSet.length; j++) {
-                lowSet[j] = reportDto.getHighSet();
-            }
-
-
-            seriesCollections.add("Max", times, max);
-            seriesCollections.add("min", times, min);
-            seriesCollections.add("avg", times, avg);
-            seriesCollections.add("标定最大值", times, lowSet);
-            seriesCollections.add("标定最小值", times, highSet);
-            ChartSeries minSeries = seriesCollections.get(3);
-            minSeries.getMarker().setSymbol(MarkerSymbol.CIRCLE);
-            ChartSeries maxSeries = seriesCollections.get(4);
-            maxSeries.getMarker().setSymbol(MarkerSymbol.CIRCLE);
-            builder.writeln("");
-            builder.getParagraphFormat().setFirstLineIndent(2);
-            builder.writeln("");
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static void addLineToGraphic(Shape shape, DocumentBuilder builder, ReportDto reportDto){
+        Chart chart = shape.getChart();
+        ChartSeriesCollection series = chart.getSeries();
+        List<String> time = new ArrayList<>();
+        List<Double> maxList = new ArrayList<>();
+        List<Double> minList = new ArrayList<>();
+        List<Double> avgList = new ArrayList<>();
+        reportDto.getAnalysis().forEach(analysis -> {
+            time.add(analysis.getDate().toString());
+            maxList.add(Double.valueOf(analysis.getMax().toString()));
+            minList.add(Double.valueOf(analysis.getMin().toString()));
+            avgList.add(Double.valueOf(analysis.getAvg().toString()));
+        });
+        String[] times = time.toArray(new String[0]);
+        double[] max =DataUtils.coverArray(maxList);
+        double[] min =DataUtils.coverArray(minList);
+        double[] avg =DataUtils.coverArray(avgList);
+        double[] lowSet = new double[times.length];
+        double[] highSet = new double[times.length];
+        for (int i = 0; i < lowSet.length; i++) {
+            lowSet[i] = reportDto.getLowSet();
         }
+        for (int j = 0; j < highSet.length; j++) {
+            lowSet[j] = reportDto.getHighSet();
+        }
+
+
+        series.add("Max", times, max);
+        series.add("min", times, min);
+        series.add("avg", times, avg);
+        series.add("标定最大值", times, lowSet);
+        series.add("标定最小值", times, highSet);
+        ChartSeries minSeries = series.get(3);
+        minSeries.getMarker().setSymbol(MarkerSymbol.CIRCLE);
+        ChartSeries maxSeries = series.get(4);
+        maxSeries.getMarker().setSymbol(MarkerSymbol.CIRCLE);
+        builder.writeln("");
+        builder.getParagraphFormat().setFirstLineIndent(2);
+        builder.writeln("");
+    }
+    private static String generateGraphicTitle(ReportDto reportDto){
+        String channelName = reportDto.getChannel();
+        int month = reportDto.getAnalysis().get(0).getDate().getMonthValue();
+        int day = reportDto.getAnalysis().get(0).getDate().getDayOfMonth();
+        String startDate = month+"月"+day+"日";
+        int endMonth = reportDto.getAnalysis().get(reportDto.getAnalysis().size()-1).getDate().getMonthValue();
+        int endDay = reportDto.getAnalysis().get(reportDto.getAnalysis().size()-1).getDate().getDayOfMonth();
+        String endDate = endMonth+"月"+endDay+"日";
+        return startDate+" 至 "+ endDate + channelName + " 数据统计图";
     }
     // 单元格内文字居中显示
     private static void cellCenterShow(DocumentBuilder builder){
         builder.getCellFormat().setVerticalAlignment(CellVerticalAlignment.CENTER);
         builder.getParagraphFormat().setAlignment(ParagraphAlignment.CENTER);
     }
-    private static void insertData(ReportDto reportDto, Analysis analysis, DocumentBuilder builder) {
-        builder.insertCell();
-        setFontColor(builder, Color.BLACK);
-        builder.getCellFormat().setWidth(20);
-        builder.getCellFormat().setVerticalMerge(CellMerge.NONE);
-        builder.getCellFormat().setVerticalAlignment(CellVerticalAlignment.CENTER);
-        cellCenterShow(builder);
-        builder.write(Integer.toString(getDate(analysis.getDate())));
-
-        builder.insertCell();
-        setFontColor(builder, Color.BLACK);
-        builder.getCellFormat().setWidth(20);
-        builder.getCellFormat().setVerticalAlignment(CellVerticalAlignment.CENTER);
-        cellCenterShow(builder);
-        if (analysis.getMax() > reportDto.getHighSet() ){
-            setFontColor(builder, Color.RED);
-        }
-        builder.write(analysis.getMax().toString());
-        setFontColor(builder, Color.BLACK);
-
-        builder.insertCell();
-        builder = setFontColor(builder, Color.BLACK);
-        builder.getCellFormat().setWidth(20);
-        builder.getCellFormat().setVerticalAlignment(CellVerticalAlignment.CENTER);
-        cellCenterShow(builder);
-        if (analysis.getMin() < reportDto.getLowSet() ){
-            setFontColor(builder, Color.RED);
-        }
-        builder.write(analysis.getMin().toString());
-        setFontColor(builder, Color.BLACK);
-
-        builder.insertCell();
-        builder = setFontColor(builder, Color.BLACK);
-        builder.getCellFormat().setWidth(20);
-        builder.getCellFormat().setVerticalAlignment(CellVerticalAlignment.CENTER);
-        cellCenterShow(builder);
-        if (analysis.getAvg() > reportDto.getHighSet() || analysis.getAvg() < reportDto.getLowSet() ){
-            setFontColor(builder, Color.RED);
-        }
-        builder.write(analysis.getAvg().toString());
-        setFontColor(builder, Color.BLACK);
-    }
-
-    private static void createDataTableSeconLine(String[] context, DocumentBuilder builder) {
-        for (int i = 0; i < context.length ; i++) {
-            builder.insertCell();
-            cellCenterShow(builder);
-            builder.getCellFormat().setHorizontalMerge(CellMerge.NONE);
-            builder.getCellFormat().setVerticalAlignment(CellVerticalAlignment.CENTER);
-            builder.write(context[i]);
-        }
-    }
-
 
     /**
      * 创建通道表数据栏
@@ -294,18 +307,26 @@ public class DocUtils {
     private static Cell createCell(String value, Document document) {
         Cell cell = new Cell(document);
         Paragraph p = new Paragraph(document);
+        p.getParagraphFormat().setAlignment(ParagraphAlignment.CENTER);
         p.appendChild(new Run(document,value));
+        cell.getCellFormat().setWidth(20);
         cell.appendChild(p);
         return cell;
     }
 
-    /**
-     * 生成数据表描述
-     * @param builder builder
-     * @param report dto
-     * @param count datatablecount
-     */
-    public static void tableDesc(DocumentBuilder builder, ReportDto report,int count){
+    private static Cell createRedCellElement(String value, Color color, Document document){
+        Paragraph p = new Paragraph(document);
+        Cell cell = new Cell(document);
+        p.getParagraphFormat().setAlignment(ParagraphAlignment.CENTER);
+        Run run = new Run(document,value);
+        run.getFont().setColor(color);
+        p.appendChild(run);
+        cell.getCellFormat().setWidth(20);
+        cell.appendChild(p);
+        return cell;
+    }
+
+    public static void tableDesc(DocumentBuilder builder, Document document, ReportDto report, Paragraph paragraph){
         String month = Integer.toString(report.getAnalysis().get(0).getDate().getMonthValue());
         String stand = report.getStand();
         String systemName = report.getSystem();
@@ -333,20 +354,14 @@ public class DocUtils {
         }
         builder.write(String.format("%.3f",avg));
         setFontColor(builder, Color.BLACK);
-        builder.writeln(" ");
-        textCenterShow(builder);
-        builder.writeln("数据表"+count+":"+stand+systemName+type+channelName+"变化表");
-        textLeftShow(builder);
     }
-    private static void combineCells(DocumentBuilder builder, int index, String context){
-        builder.insertCell();
-        builder.getCellFormat().setWidth(20);
-        builder.getCellFormat().setHorizontalMerge(CellMerge.FIRST);
-        builder.write(context);
-        for (int i = 0; i < index-1 ; i++) {
-            builder.insertCell();
-            builder.getCellFormat().setHorizontalMerge(CellMerge.PREVIOUS);
-        }
+    private static void combineCells(Row row, Document document, int index1, int index2){
+        Cell commonEmptyCell1 = createCell("",document);
+        Cell commonEmptyCell2 = createCell("",document);
 
+        commonEmptyCell1.getCellFormat().setHorizontalMerge(CellMerge.PREVIOUS);
+        row.getCells().insert(index1, commonEmptyCell1);
+        commonEmptyCell2.getCellFormat().setHorizontalMerge(CellMerge.PREVIOUS);
+        row.getCells().insert(index2, commonEmptyCell2);
     }
 }

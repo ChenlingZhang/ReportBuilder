@@ -68,6 +68,46 @@ public class MethodTest {
         reportDto5.setLowSet(2.0);
         reportDto5.setHighSet(10.0);
         reportDto5.setAnalysis(analyses);
+        ReportDto reportDto51 = new ReportDto();
+        reportDto51.setStand("516");
+        reportDto51.setSystem("xxxx系统");
+        reportDto51.setType("xxxx类型");
+        reportDto51.setName("name2");
+        reportDto51.setSpecification("sp2");
+        reportDto51.setChannel("channel2");
+        reportDto51.setLowSet(2.0);
+        reportDto51.setHighSet(10.0);
+        reportDto51.setAnalysis(analyses);
+        ReportDto reportDto52 = new ReportDto();
+        reportDto52.setStand("516");
+        reportDto52.setSystem("xxxx系统");
+        reportDto52.setType("xxxx类型");
+        reportDto52.setName("name2");
+        reportDto52.setSpecification("sp2");
+        reportDto52.setChannel("channel2");
+        reportDto52.setLowSet(2.0);
+        reportDto52.setHighSet(10.0);
+        reportDto52.setAnalysis(analyses);
+        ReportDto reportDto53 = new ReportDto();
+        reportDto53.setStand("516");
+        reportDto53.setSystem("xxxx系统");
+        reportDto53.setType("xxxx类型");
+        reportDto53.setName("name2");
+        reportDto53.setSpecification("sp2");
+        reportDto53.setChannel("channel2");
+        reportDto53.setLowSet(2.0);
+        reportDto53.setHighSet(10.0);
+        reportDto53.setAnalysis(analyses);
+        ReportDto reportDto54 = new ReportDto();
+        reportDto54.setStand("516");
+        reportDto54.setSystem("xxxx系统");
+        reportDto54.setType("xxxx类型");
+        reportDto54.setName("name2");
+        reportDto54.setSpecification("sp2");
+        reportDto54.setChannel("channel2");
+        reportDto54.setLowSet(2.0);
+        reportDto54.setHighSet(10.0);
+        reportDto54.setAnalysis(analyses);
 
         ReportDto reportDto4 = new ReportDto();
         reportDto4.setStand("516");
@@ -96,6 +136,10 @@ public class MethodTest {
         reportDtos.add(reportDto3);
         reportDtos.add(reportDto4);
         reportDtos.add(reportDto5);
+        reportDtos.add(reportDto51);
+        reportDtos.add(reportDto52);
+        reportDtos.add(reportDto53);
+        reportDtos.add(reportDto54);
 
         return reportDtos;
     }

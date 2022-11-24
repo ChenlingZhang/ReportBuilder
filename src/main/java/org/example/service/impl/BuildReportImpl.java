@@ -24,6 +24,8 @@ public class BuildReportImpl implements BuildReport {
     @Override
     public void build(List<ReportDto> reportDtos, String filePath) {
         int channelTableCount = 1;
+        int dataTableCount =1;
+        int shapeCount = 1;
         try{
             File file = new File(filePath);
             file.createNewFile();
@@ -46,8 +48,13 @@ public class BuildReportImpl implements BuildReport {
                 List<String> typeList = new ArrayList<>(); // 二级标题存储表
                 int typeCount = 0;
                 int titleCount = 0;
+                int fixTitleDisplayCount = 0;
+                int index = 0;
                 Table channelTable = null;
                 Table dataTable = null;
+                Paragraph dataDesc = null;
+                Shape shape = null;
+                int excuteCount=0;
                 for (ReportDto report: reports) {
                     int size = reports.size();
                     if (!typeList.contains(report.getType())){
@@ -58,24 +65,39 @@ public class BuildReportImpl implements BuildReport {
                         typeList.add(report.getType());
                     }
                     titleCount++;
-                    String fixTitle = mainTitleCount+"."+typeCount+ "."+titleCount+"统计通道"+" ";
-                    DocUtils.generateTitle(builder,fixTitle,3);
+                    if (fixTitleDisplayCount == 0){
+                        String fixTitle = mainTitleCount+"."+typeCount+ "."+titleCount+"统计通道"+" ";
+                        DocUtils.generateTitle(builder,fixTitle,3);
+                        fixTitleDisplayCount++;
+                    }
                     log.info("key：{} title生成结束",key);
                     if (channelTable == null){
                         log.info("channelTable 为null, key{}: 开始生成通道信息表",key);
                         DocUtils.textCenterShow(builder);
                         builder.writeln("通道表"+channelTableCount+":"+report.getStand()+report.getSystem()+report.getType());
-                        channelTable = DocUtils.createChannelTable(reports,builder,document);
+                        channelTable = DocUtils.createChannelTable(builder,document);
+                        channelTableCount++;
                     }
                     DocUtils.addRowsBehind(channelTable,report,document);
-
-                    if (dataTable == null){
-                        log.info("dataTable 为null, key{}：开始生成数据信息表", key);
-
+                    builder.writeln("");
+                    if (dataTable == null ){
+                        log.info("dataTable 为null, key{}: 开始生成数据表",key);
+                        DocUtils.textCenterShow(builder);
+                        builder.writeln("数据表"+dataTableCount+":"+report.getStand()+report.getSystem()+report.getType());
+                        dataTable = DocUtils.initDataTable(builder,document,report);
+                        dataTableCount++;
+                        excuteCount =0;
                     }
+                    log.info("dataTable 不为null, key{}: 开始插入数据",key);
+                    excuteCount = DocUtils.insertIntoDataTable(document,builder,report,dataTable,excuteCount);
+                    log.info("执行次数{}",excuteCount);
 
-                    log.info("key{}: 开始生数据表",key);
-                    DocUtils.createDataTable(reports,builder);
+                    if (shape == null){
+                        log.info("shape为空开始创建shape模板并清楚模板内数据");
+                        shape = DocUtils.initGraphic(report,builder,shapeCount);
+                        shapeCount++;
+                    }
+                    DocUtils.addLineToGraphic(shape,builder,report);
                 }
                 mainTitleCount++;
             }
