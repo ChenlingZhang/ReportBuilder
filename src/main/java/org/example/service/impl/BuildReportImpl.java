@@ -49,14 +49,16 @@ public class BuildReportImpl implements BuildReport {
                 int typeCount = 0;
                 int titleCount = 0;
                 int fixTitleDisplayCount = 0;
-                int index = 0;
+                boolean hasDesc = false;
+                int dataTableExcude = 0;
                 Table channelTable = null;
                 Table dataTable = null;
-                Paragraph dataDesc = null;
                 Shape shape = null;
                 int excuteCount=0;
+                log.info("插入数据 key{}", key);
                 for (ReportDto report: reports) {
-                    int size = reports.size();
+                    log.info("ReportDTO: {}", reports.size());
+                   dataTableExcude = dataTableExcude + 1;
                     if (!typeList.contains(report.getType())){
                         typeCount++;
                         String title = mainTitleCount+"."+typeCount+" " +report.getType();
@@ -80,7 +82,13 @@ public class BuildReportImpl implements BuildReport {
                     }
                     DocUtils.addRowsBehind(channelTable,report,document);
                     builder.writeln("");
-                    if (dataTable == null ){
+                    if (!hasDesc){
+                        log.info("开始生成数据表描述");
+                        DocUtils.textLeftShow(builder);
+                        DocUtils.tableDesc(builder,document,reports);
+                        hasDesc = true;
+                    }
+                    if (dataTable == null || excuteCount ==4){
                         log.info("dataTable 为null, key{}: 开始生成数据表",key);
                         DocUtils.textCenterShow(builder);
                         builder.writeln("数据表"+dataTableCount+":"+report.getStand()+report.getSystem()+report.getType());
@@ -91,13 +99,22 @@ public class BuildReportImpl implements BuildReport {
                     log.info("dataTable 不为null, key{}: 开始插入数据",key);
                     excuteCount = DocUtils.insertIntoDataTable(document,builder,report,dataTable,excuteCount);
                     log.info("执行次数{}",excuteCount);
-
-                    if (shape == null){
-                        log.info("shape为空开始创建shape模板并清楚模板内数据");
-                        shape = DocUtils.initGraphic(report,builder,shapeCount);
-                        shapeCount++;
+                    log.info("data Excute{}, reports length{}", dataTableExcude, reports.size());
+                    if (dataTableExcude == reports.size()) {
+                        log.info("data table 数据完整开始生成图表");
+                        if (shape == null) {
+                            log.info("shape为空开始创建shape模板并清楚模板内数据");
+                            shape = DocUtils.initGraphic(report, builder, shapeCount);
+                            shapeCount++;
+                        }
                     }
-                    DocUtils.addLineToGraphic(shape,builder,report);
+                    if(shape !=null){
+                        for (ReportDto r: reports) {
+                            DocUtils.addLineToGraphic(shape, builder, r);
+                        }
+
+                    }
+                    else log.info("data table数据不完整 暂不生成图表");
                 }
                 mainTitleCount++;
             }

@@ -326,34 +326,47 @@ public class DocUtils {
         return cell;
     }
 
-    public static void tableDesc(DocumentBuilder builder, Document document, ReportDto report, Paragraph paragraph){
-        String month = Integer.toString(report.getAnalysis().get(0).getDate().getMonthValue());
-        String stand = report.getStand();
-        String systemName = report.getSystem();
-        String type = report.getType();
-        String channelName = report.getChannel();
-        Double max = DataUtils.getMax(report.getAnalysis());
-        Double min = DataUtils.getMin(report.getAnalysis());
-        Double avg = DataUtils.getAvg(report.getAnalysis());
-        textLeftShow(builder);
-        builder.write(month + "月1日至31日" + stand+systemName+type+channelName+"变化范围为:");
-        if (min < report.getLowSet()){
-            setFontColor(builder, Color.RED);
+    public static void tableDesc(DocumentBuilder builder, Document document, List<ReportDto> reports) {
+        String month;
+        String stand;
+        String systemName;
+        String type;
+        String channelName;
+        Double max;
+        Double min;
+        Double avg;
+
+        for (ReportDto report : reports) {
+            month = Integer.toString(report.getAnalysis().get(0).getDate().getMonthValue());
+            stand = report.getStand();
+            systemName = report.getSystem();
+            type = report.getType();
+            channelName = report.getChannel();
+            max = DataUtils.getMax(report.getAnalysis());
+            min = DataUtils.getMin(report.getAnalysis());
+            avg = DataUtils.getAvg(report.getAnalysis());
+            textLeftShow(builder);
+            builder.write(month + "月1日至31日" + stand + systemName + type + channelName + "变化范围为:");
+            if (min < report.getLowSet()) {
+                setFontColor(builder, Color.RED);
+            }
+            builder.write(min.toString());
+            setFontColor(builder, Color.BLACK);
+            builder.write("~");
+            if (max > report.getHighSet()) {
+                setFontColor(builder, Color.RED);
+            }
+            builder.write(max.toString());
+            builder = setFontColor(builder, Color.BLACK);
+            ;
+            builder.write("平均值为：");
+            if (avg < report.getLowSet() || avg < report.getHighSet()) {
+                setFontColor(builder, Color.RED);
+            }
+            builder.write(String.format("%.3f", avg));
+            setFontColor(builder, Color.BLACK);
         }
-        builder.write(min.toString());
-        setFontColor(builder, Color.BLACK);
-        builder.write("~");
-        if (max > report.getHighSet()){
-            setFontColor(builder, Color.RED);
-        }
-        builder.write(max.toString());
-        builder = setFontColor(builder,Color.BLACK);;
-        builder.write("平均值为：");
-        if (avg < report.getLowSet()||avg<report.getHighSet()){
-            setFontColor(builder, Color.RED);
-        }
-        builder.write(String.format("%.3f",avg));
-        setFontColor(builder, Color.BLACK);
+        builder.writeln("    ");
     }
     private static void combineCells(Row row, Document document, int index1, int index2){
         Cell commonEmptyCell1 = createCell("",document);

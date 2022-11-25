@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ac4d6019-398f-4f8e-b9a8-da3bf96ac3fe" name="Changes" comment="修改通道表生成逻辑·">
+    <list default="true" id="ac4d6019-398f-4f8e-b9a8-da3bf96ac3fe" name="Changes" comment="修改数据表以及图表生成逻辑">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/impl/BuildReportImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/impl/BuildReportImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/DataUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/DataUtils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/DocUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/DocUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/MethodTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/MethodTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +43,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/WorkSpace/ReportBuilder/src&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;MTConfigurable&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -137,7 +136,9 @@
       <workItem from="1669132201220" duration="350000" />
       <workItem from="1669163380567" duration="9025000" />
       <workItem from="1669191150301" duration="4842000" />
-      <workItem from="1669248145554" duration="25922000" />
+      <workItem from="1669248145554" duration="26043000" />
+      <workItem from="1669335347842" duration="594000" />
+      <workItem from="1669335977240" duration="1750000" />
     </task>
     <task id="LOCAL-00001" summary="项目搭建上传">
       <created>1669129875587</created>
@@ -160,7 +161,14 @@
       <option name="project" value="LOCAL" />
       <updated>1669195547617</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="修改数据表以及图表生成逻辑">
+      <created>1669282482591</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1669282482591</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,6 +188,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="项目搭建上传" />
     <MESSAGE value="修改通道表生成逻辑" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改通道表生成逻辑" />
+    <MESSAGE value="修改数据表以及图表生成逻辑" />
+    <option name="LAST_COMMIT_MESSAGE" value="修改数据表以及图表生成逻辑" />
   </component>
 </project>
